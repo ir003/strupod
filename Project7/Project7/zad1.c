@@ -75,7 +75,7 @@ void ispis(Student* studenti, int brojStudenata)
         double relativan_br_bodova = (studenti[i].bodovi / MAX_BODOVA) * 100.0;
 
 
-        printf("%s %s ima %d bodova, ?to je %.2f%%\n",
+        printf("%s %s ima %d bodova, to je %f\n",
             studenti[i].ime, studenti[i].prezime,
             studenti[i].bodovi, relativan_br_bodova);
     }
