@@ -4,9 +4,6 @@
 #include <string.h>
 #define MAX_LINE 1024
 #define MAX_SIZE 100
-#define FILE_ERROR_OPEN -1
-#define MALLOC_ERROR -2
-#define SCANF_ERROR -3
 
 typedef struct monomial {
     int coef;
@@ -36,15 +33,13 @@ int main()
     filePointer = fopen("polinomi.txt", "r");
 
     if (filePointer == NULL) {
-        printf("File could not be opened.\n");
-        return FILE_ERROR_OPEN;
+        printf("error \n");
+        return 1;
     }
 
-    // Reads 1st line and coverts in into poly1
     fgets(buffer, MAX_LINE, filePointer);
     strToPoly(&poly1Head, buffer);
 
-    // Reads 2nd line and coverts in into poly2
     fgets(buffer, MAX_LINE, filePointer);
     strToPoly(&poly2Head, buffer);
 
@@ -69,7 +64,7 @@ int main()
     deletePoly(&sumHead);
     deletePoly(&productHead);
     
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int addMonoToPoly(Mono* head, Mono* mono)
@@ -77,17 +72,17 @@ int addMonoToPoly(Mono* head, Mono* mono)
     Mono* prev = head;
     Mono* temp = NULL;
 
-    // ax^0 = 0
+
     if (mono->coef == 0) {
         free(mono);
-        return EXIT_SUCCESS;
+        return 0;
     }
 
-    // Find first monomial with exponent less than or equal to exponent of new monomial
+
     while (prev->next != NULL && prev->next->exp > mono->exp) 
         prev = prev->next;
 
-    // ax^n + bx^n = (a+b)x^n
+
     if (prev->next != NULL && mono->exp == prev->next->exp)
     {
         prev->next->coef += mono->coef;
@@ -101,13 +96,13 @@ int addMonoToPoly(Mono* head, Mono* mono)
         }
     }
         
-    // Put new monomial after the predecessor
+
     else {
         mono->next = prev->next;
         prev->next = mono;
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int strToPoly(Mono* head, char* str)
@@ -118,15 +113,15 @@ int strToPoly(Mono* head, char* str)
     while (strlen(str) > 0)
     {
         mono = (Mono*)malloc(sizeof(Mono));
-        if (mono == NULL) return MALLOC_ERROR;
+        if (mono == NULL) return -2;
 
-        if (sscanf(str, " %dx^%d %n", &mono->coef, &mono->exp, &size) != 2) return SCANF_ERROR;
+        if (sscanf(str, " %dx^%d %n", &mono->coef, &mono->exp, &size) != 2) return -3;
 
         addMonoToPoly(head, mono);
         str += size;
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int printMono(Mono* mono)
@@ -136,7 +131,7 @@ int printMono(Mono* mono)
     if (mono->exp == 1) printf("x ");
     else if (mono->exp != 0) printf("x^%d ", mono->exp);
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int printPoly(Mono* current)
@@ -155,7 +150,7 @@ int printPoly(Mono* current)
 
     printf("\n");
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int deletePoly(Mono* head)
@@ -169,7 +164,7 @@ int deletePoly(Mono* head)
         free(temp);
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int polySum(Mono* sum, Mono* poly1, Mono* poly2)
@@ -179,7 +174,7 @@ int polySum(Mono* sum, Mono* poly1, Mono* poly2)
     while (poly1 != NULL)
     {
         temp = (Mono*)malloc(sizeof(Mono));
-        if (temp == NULL) return MALLOC_ERROR;
+        if (temp == NULL) return -2;
 
         temp->coef = poly1->coef;
         temp->exp = poly1->exp;
@@ -191,7 +186,7 @@ int polySum(Mono* sum, Mono* poly1, Mono* poly2)
     while (poly2 != NULL)
     {
         temp = (Mono*)malloc(sizeof(Mono));
-        if (temp == NULL) return MALLOC_ERROR;
+        if (temp == NULL) return -2;
 
         temp->coef = poly2->coef;
         temp->exp = poly2->exp;
@@ -200,7 +195,7 @@ int polySum(Mono* sum, Mono* poly1, Mono* poly2)
         poly2 = poly2->next;
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 int polyProduct(Mono* product, Mono* poly1, Mono* poly2)
@@ -214,7 +209,7 @@ int polyProduct(Mono* product, Mono* poly1, Mono* poly2)
         while (poly2 != NULL)
         {
             temp = (Mono*)malloc(sizeof(Mono));
-            if (temp == NULL) return MALLOC_ERROR;
+            if (temp == NULL) return -2;
 
             temp->coef = poly1->coef * poly2->coef;
             temp->exp = poly1->exp + poly2->exp;
