@@ -14,39 +14,39 @@ typedef struct {
     StackItem* top;
 } Stack;
 
-// Funkcije za rad sa stekom
+// fun stacka
 int push(Stack* stack, float x);
 int pop(Stack* stack, float* x);
 
 int main() {
-    char postfix[MAX_LINE] = {0};         // Postfix izraz kao string
-    char* curr = NULL;                    // Pokazivač na trenutni element postfix izraza
+    char postfix[MAX_LINE] = {0};  //postfix-string
+    char* curr = NULL;  //pok-trenutni ele postfixa
     float firstOperand = 0, secondOperand = 0, result = 0;
-    Stack stack = {.top = NULL};          // Stek inicijaliziran na prazan
-    FILE* file = fopen("postfix.txt", "r"); // Otvara datoteku s postfix izrazom
+    Stack stack = {.top = NULL}; //stack kao prazan
+    FILE* file = fopen("postfix.txt", "r"); //otvara dat post izraza
 
     if (!file) {
         printf("Datoteka nije otvorena!\n");
-        return error;
+        return 0;
     }
 
-    fgets(postfix, MAX_LINE, file);       // Čita postfix izraz iz datoteke
-    fclose(file);                         // Zatvara datoteku
+    fgets(postfix, MAX_LINE, file); //"xita" post
+    fclose(file);     
 
     printf("Postfix izraz: %s\n", postfix);
 
-    curr = strtok(postfix, " ");          // Djelimo string na dijelove prema razmacima
-    while (curr != NULL) {                // Iteriramo kroz svaki token (broj ili operator)
+    curr = strtok(postfix, " ");          // djelimo string na dijelove prema razmacima
+    while (curr != NULL) {                // prolazi kroz svaki ele (broj ili operator)
         if (isdigit(curr[0]) || (curr[0] == '-' && isdigit(curr[1]))) {
-            // Ako je token broj (pozitivan ili negativan), dodajemo ga na stek
+            // ak je elem br (pozitivan ili negativan), dodajemo ga na stack
             if (push(&stack, atof(curr)) != 0) return -1;
         } else if (strchr("+-*/", curr[0])) {
-            // Ako je token operator, skidamo dva broja sa steka
+            // ako je elem operator, skidamo 2br sa stacka
             if (pop(&stack, &secondOperand) != 0 || pop(&stack, &firstOperand) != 0) {
                 printf("Stek je prazan!\n");
                 return 1;
             }
-            // Izračunavamo rezultat i dodajemo ga na stek
+            // izracunavamo rezultat i dodajemo ga na stack
             switch (curr[0]) {
                 case '+': push(&stack, firstOperand + secondOperand); break;
                 case '-': push(&stack, firstOperand - secondOperand); break;
@@ -57,37 +57,37 @@ int main() {
             printf("Neispravan znak: %s\n", curr);
             return 1;
         }
-        curr = strtok(NULL, " ");         // Prijelaz na sljedeći token
+        curr = strtok(NULL, " ");         //  sljedeci ele
     }
 
-    if (pop(&stack, &result) != 0) return 1; // Skidamo konačni rezultat sa steka
-    printf("Rezultat: %g\n", result);     // Ispis rezultata
+    if (pop(&stack, &result) != 0) return 1; // uzimamo zadnji 
+    printf("Rezultat: %g\n", result);     // ispis 
 
     return 0;
 }
 
-// Dodaje element na vrh steka
+// daje element na vrh 
 int push(Stack* stack, float x) {
-    StackItem* newItem = (StackItem*)malloc(sizeof(StackItem)); // Alociramo memoriju za novi čvor
+    StackItem* newItem = (StackItem*)malloc(sizeof(StackItem)); // aloc mem 
     if (!newItem) {
         printf("Greška pri alokaciji memorije!\n");
         return -1;
     }
-    newItem->value = x;                  // Postavljamo vrijednost
-    newItem->next = stack->top;          // Novi element pokazuje na trenutni vrh steka
-    stack->top = newItem;                // Novi element postaje vrh steka
+    newItem->value = x;      // stavljamo vrijedn
+    newItem->next = stack->top;    // novi ele pokazuje na vrh
+    stack->top = newItem;        // i postaje vrh 
     return 0;
 }
 
-// Skida element s vrha steka
+// mice elem s vrha 
 int pop(Stack* stack, float* x) {
-    if (!stack->top) {                   // Ako je stek prazan
+    if (!stack->top) {                   // prazan stack
         printf("Stek je prazan!\n");
         return 1;
     }
-    StackItem* temp = stack->top;        // Privremeno spremamo trenutni vrh
-    *x = temp->value;                    // Kopiramo vrijednost vrha u x
-    stack->top = temp->next;             // Vrh postaje sljedeći element u steku
-    free(temp);                          // Oslobađamo memoriju za prethodni vrh
+    StackItem* temp = stack->top; // privremen vrh
+    *x = temp->value;      // kopir vrijednost vrha u x
+    stack->top = temp->next;             // vrh-sljedeci ele u stavku
+    free(temp);                          // free mem
     return 0;
 }
