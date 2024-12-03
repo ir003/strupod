@@ -35,8 +35,8 @@ int main() {
 
     printf("Postfix izraz: %s\n", postfix);
 
-    curr = strtok(postfix, " ");          // djelimo string na dijelove prema razmacima
-    while (curr != NULL) {                // prolazi kroz svaki ele (broj ili operator)
+    curr = strtok(postfix, " ");  // djelimo string na dijelove prema razmacima
+    while (curr != NULL) {   // prolazi kroz svaki ele (broj ili operator)
         if (isdigit(curr[0]) || (curr[0] == '-' && isdigit(curr[1]))) {
             // ak je elem br (pozitivan ili negativan), dodajemo ga na stack
             if (push(&stack, atof(curr)) != 0) return -1;
@@ -61,7 +61,7 @@ int main() {
     }
 
     if (pop(&stack, &result) != 0) return 1; // uzimamo zadnji 
-    printf("Rezultat: %g\n", result);     // ispis 
+    printf("Rezultat: %g\n", result);   // ispis 
 
     return 0;
 }
@@ -73,21 +73,21 @@ int push(Stack* stack, float x) {
         printf("Greška pri alokaciji memorije!\n");
         return -1;
     }
-    newItem->value = x;      // stavljamo vrijedn
+    newItem->value = x;  // stavljamo vrijedn
     newItem->next = stack->top;    // novi ele pokazuje na vrh
-    stack->top = newItem;        // i postaje vrh 
+    stack->top = newItem;   // i postaje vrh 
     return 0;
 }
 
 // mice elem s vrha 
 int pop(Stack* stack, float* x) {
-    if (!stack->top) {                   // prazan stack
+    if (!stack->top) {      // prazan stack
         printf("Stek je prazan!\n");
         return 1;
     }
     StackItem* temp = stack->top; // privremen vrh
     *x = temp->value;      // kopir vrijednost vrha u x
-    stack->top = temp->next;             // vrh-sljedeci ele u stavku
-    free(temp);                          // free mem
+    stack->top = temp->next;     // vrh-sljedeci ele u stavku
+    free(temp);        // free mem
     return 0;
 }
