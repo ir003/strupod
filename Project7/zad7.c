@@ -22,7 +22,7 @@ typedef struct stog {
 } Stog, *StogPoz;
 
 DirPoz noviDir(char* ime);
-int dodajPoddir(DirPoz roditelj, DirPoz pod);
+int dodajPoddir(DirPoz rod, DirPoz pod);
 int ispisiSadr(DirPoz dir, int dubina);
 int push(StogPoz stog, DirPoz dir);
 int pop(StogPoz stog);
@@ -67,7 +67,7 @@ int main() {
                 printf("u direktoriju smo\n");
             }
             else {
-                printf("u rod smo direktroiju\n");
+                printf("u rod. smo direktroiju\n");
             }
             break;
 
@@ -122,66 +122,56 @@ int ispisiSadr(DirPoz dir, int dubina) {
 // daje novi elem na stog odn trenutni dir
 int push(StogPoz stog, DirPoz dir) {
     StogPoz novi = (StogPoz)malloc(sizeof(Stog)); // alok za novi elem 
-    if (!novi) return MALLOC_ERROR; // provjera 
+    if (!novi) return MALLOC_ERROR;
 
     novi->dirPoz = dir;  // pokazivac na dir koji dodajemo
-    novi->sljedeci = stog->sljedeci; // novi elem stoga pokazuje vrh stoga
-    stog->sljedeci = novi; // Glava stoga sada pokazuje na novi element kao vrh stoga
+    novi->sljedeci = stog->sljedeci; // novi elem stoga --> vrh stoga
+    stog->sljedeci = novi; // vrh stoga  pokazuje novi elem kao vrh stoga
 
     return 0;                   
 }
-// Funkcija uklanja vrh stoga (vraća se u roditeljski direktorij)
-// Parametri:
-// - stog: pokazivač na glavu stoga
-// Povratna vrijednost: 0 ako je uspješno, EMPTY_STACK ako je stog već prazan
-int pop(StogPozicija stog) {
-    if (!stog->sljedeci) return EMPTY_STACK; // Ako stog nema elemenata (prazan je), vraća grešku
+//  uklanjanje vrha stoga 
+int pop(StogPoz stog) {
+    if (!stog->sljedeci) return EMPTY_STACK; // stog nema elem (prazan 
 
-    StogPozicija temp = stog->sljedeci; // Privremeno sprema vrh stoga u temp
-    stog->sljedeci = temp->sljedeci;   // Glava stoga sada pokazuje na sljedeći element ispod vrha
-    free(temp);                        // Oslobađa memoriju za prethodni vrh stoga
+    StogPoz temp = stog->sljedeci; //  vrh stoga ---> temp
+    stog->sljedeci = temp->sljedeci;   // vrh stoga pokazuje  sljedeci elem ispod vrha
+    free(temp);                       
 
-    return 0;                          // Vraća uspješan završetak funkcije
+    return 0;                       
 }
-// Funkcija mijenja trenutni direktorij u poddirektorij s danim imenom
-// Parametri:
-// - stog: pokazivač na glavu stoga
-// - ime: ime poddirektorija u koji se želi promijeniti
-int promijeniDirektorij(StogPozicija stog, char* ime) {
-    DirPozicija trenutni = stog->dirPoz->poddirektorij; // Inicijalizira trenutni na prvi poddirektorij aktivnog direktorija
+//promejna trenutng dir u poddir s datim imenom
+int promijeniDir(StogPoz stog, char* ime) {
+    DirPoz trenutni = stog->dirPoz->poddir; // trenutni na prvi poddir aktivnog dir
 
-    // Petlja traži poddirektorij s traženim imenom
+    //traži se poddir sa datim imenom
     while (trenutni && strcmp(trenutni->ime, ime) != 0) 
-        trenutni = trenutni->sljedeci; // Prelazi na sljedeći poddirektorij dok ne pronađe odgovarajući
+        trenutni = trenutni->sljedeci; // ide na sljedeći poddi dok ne nađe
 
-    if (trenutni) { // Ako je direktorij pronađen
-        push(stog, trenutni); // Dodaje direktorij na stog (mijenja trenutni direktorij)
-        printf("Promijenili ste direktorij u '%s'.\n", ime); // Ispisuje poruku o uspješnoj promjeni
+    if (trenutni) { // dir naden
+        push(stog, trenutni); // dodaje direktorij na stog 
+        printf("promijenili smo direktorij u '%s'\n", ime); 
     }
-    else { // Ako nije pronađen odgovarajući direktorij
-        printf("Direktorij '%s' nije pronaden.\n", ime); // Ispisuje poruku o grešci
+    else { //  nije pronaden taj dir
+        printf("direktorij '%s' nije pronaden\n", ime); 
     }
 
-    return 0; // Vraća uspješan završetak funkcije
+    return 0; 
 }
 
 
-
-void brisiDirektorije(DirPozicija dir) {
-    while (dir->poddirektorij) { // dok postoje poddirektoriji
-        DirPozicija temp = dir->poddirektorij; // Privremeno sprema prvi poddirektorij
-        dir->poddirektorij = temp->sljedeci;   // Ažurira pokazivač na sljedeći poddirektorij
-        brisiDirektorije(temp); // Rekurzivno briše poddirektorije
-        free(temp); // Oslobađa memoriju za trenutni direktorij
+void brisiDir(DirPoz dir) {
+    while (dir->poddir) { // dok postoje p
+        DirPoz temp = dir->poddir; //  sprema prvi poddir
+        dir->poddir = temp->sljedeci;   // stavlja na sljedeci poddir
+        brisiDir(temp);  //rekuz
+        free(temp); 
     }
 }
-// Funkcija briše sve elemente stoga i oslobađa memoriju
-// Parametar:
-// - stog: pokazivač na glavu stoga
-void brisiStog(StogPozicija stog) {
-    while (stog->sljedeci) { // Dok stog ima elemenata
-        StogPozicija temp = stog->sljedeci; // Privremeno sprema vrh stoga
-        stog->sljedeci = temp->sljedeci;    // Ažurira pokazivač na sljedeći element u stogu
-        free(temp); // Oslobađa memoriju za trenutni element stoga
+void brisiStog(StogPoz stog) {
+    while (stog->sljedeci) { // stog ima elem
+        StogPoz temp = stog->sljedeci;// sprema na vrh 
+        stog->sljedeci = temp->sljedeci; // prebacuje pok na sljedeci elem
+        free(temp); 
     }
 }
