@@ -8,132 +8,127 @@
 #define EMPTY_STACK 1
 #define MALLOC_ERROR -1
 
-// Struktura za direktorij
+
 typedef struct dir {
-    char ime[MAX_NAME];        // Ime direktorija
-    struct dir* poddirektorij; // Pokazivač na prvi poddirektorij
-    struct dir* sljedeci;      // Pokazivač na sljedeći direktorij u istoj razini
-} Dir, *DirPozicija;
+    char ime[MAX_NAME];    //  dir
+    struct dir* poddir; // pokaz na prvi poddir
+    struct dir* sljedeci; // pok na sljed. dir u istoj razini
+} Dir, *DirPoz;
 
-// Struktura za stog (povijest direktorija)
+// povijest direktorija
 typedef struct stog {
-    DirPozicija dirPoz;        // Pokazivač na trenutno aktivni direktorij
-    struct stog* sljedeci;     // Pokazivač na sljedeći element stoga
-} Stog, *StogPozicija;
+    DirPoz dirPoz;   // pokaz na trenutni dir
+    struct stog* sljedeci;   // pokaz na sledec elem stoga
+} Stog, *StogPoz;
 
-// Funkcije
-DirPozicija noviDirektorij(char* ime);
-int dodajPoddirektorij(DirPozicija roditelj, DirPozicija pod);
-int ispisiSadrzaj(DirPozicija dir, int dubina);
-int push(StogPozicija stog, DirPozicija dir);
-int pop(StogPozicija stog);
-int promijeniDirektorij(StogPozicija stog, char* ime);
-void brisiDirektorije(DirPozicija dir);
-void brisiStog(StogPozicija stog);
+DirPoz noviDir(char* ime);
+int dodajPoddir(DirPoz roditelj, DirPoz pod);
+int ispisiSadr(DirPoz dir, int dubina);
+int push(StogPoz stog, DirPoz dir);
+int pop(StogPoz stog);
+int promDir(StogPoz stog, char* ime);
+void brisiDir(DirPoz dir);
+void brisiStog(StogPoz stog);
 
 int main() {
     char naredba;
-    char ime[MAX_NAME] = { 0 };         // Privremeno ime direktorija
-    Dir root = { "C:", NULL, NULL };    // Root direktorij
-    Stog stog = { .dirPoz = &root, .sljedeci = NULL }; // Stog za povijest direktorija
+    char ime[MAX_NAME] = { 0 };  // privr ime dir
+    Dir root = { "C:", NULL, NULL };   // root dir
+    Stog stog = { .dirPoz = &root, .sljedeci = NULL }; // stog za povijest dir
 
-    printf("1 - Dodaj direktorij\n2 - Promijeni direktorij\n3 - Vrati se na roditeljski direktorij\n");
-    printf("4 - Ispisi sadrzaj direktorija\n5 - Kraj programa\n");
+    printf("1 - dodaj direktorij\n2 - promijeni direktorij\n3 - vrati se na rod. direktorij\n - 4 - spisi sadrzaj direktorija\n5 - kraj\n");
 
     do {
-        printf("\nUnesi naredbu: ");
+        printf("\nunesi naredbu: ");
         scanf(" %c", &naredba);
 
         switch (naredba) {
-        case '1': // Dodaj poddirektorij
-            printf("Unesi ime novog direktorija: ");
+        case '1': // dodavanje poddir
+            printf("unesi ime novog dir: ");
             scanf(" %s", ime);
-            DirPozicija novi = noviDirektorij(ime);
+            DirPoz novi = noviDir(ime);
             if (novi) {
-                dodajPoddirektorij(stog.dirPoz, novi);
-                printf("Direktorij '%s' je dodan.\n", ime);
+                dodajPoddir(stog.dirPoz, novi);
+                printf("dir '%s' je dodan\n", ime);
             }
             else {
-                printf("Greska pri stvaranju direktorija.\n");
+                printf("greska\n");
             }
             break;
 
-        case '2': // Promijeni u poddirektorij
-            printf("Unesi ime direktorija: ");
+        case '2': // promijena u poddir
+            printf("unesi ime dir ");
             scanf(" %s", ime);
-            promijeniDirektorij(&stog, ime);
+            promijeniDir(&stog, ime);
             break;
 
-        case '3': // Vrati se na roditeljski direktorij
+        case '3': // vracanje na rod dir
             if (pop(&stog)) {
-                printf("Vec ste u root direktoriju.\n");
+                printf("u direktoriju smo\n");
             }
             else {
-                printf("Vracao se u roditeljski direktorij.\n");
+                printf("u rod smo direktroiju\n");
             }
             break;
 
-        case '4': // Ispisi sadrzaj direktorija
-            printf("Sadrzaj direktorija '%s':\n", stog.dirPoz->ime);
-            ispisiSadrzaj(stog.dirPoz, 0);
+        case '4': // ispisi
+            printf("sadrzaj direktorija '%s':\n", stog.dirPoz->ime);
+            ispisiSadr(stog.dirPoz, 0);
             break;
 
-        case '5': // Kraj programa
-            printf("Zavrsetak programa.\n");
+        case '5': // kraj
+            printf("zavrsetak \n");
             break;
 
         default:
-            printf("Nepoznata naredba.\n");
+            printf("nepoznata naredba\n");
         }
     } while (naredba != '5');
 
-    brisiDirektorije(&root);  // Brisanje svih direktorija
-    brisiStog(&stog);         // Brisanje stoga
+    brisiDir(&root);  
+    brisiStog(&stog);        
     return 0;
 }
 
-// Funkcija za stvaranje novog direktorija
-DirPozicija noviDirektorij(char* ime) {
-    DirPozicija novi = (DirPozicija)malloc(sizeof(Dir));
+// fun za stvaranje novog dir
+DirPoz noviDir(char* ime) {
+    DirPoz novi = (DirPoz)malloc(sizeof(Dir));
     if (!novi) return NULL;
 
     strcpy(novi->ime, ime);
-    novi->poddirektorij = NULL;
+    novi->poddir = NULL;
     novi->sljedeci = NULL;
     return novi;
 }
 
-// Dodaje poddirektorij unutar roditelja
-int dodajPoddirektorij(DirPozicija roditelj, DirPozicija pod) {
-    pod->sljedeci = roditelj->poddirektorij; // Postavljamo novi poddirektorij na početak liste
-    roditelj->poddirektorij = pod;          // Ažuriramo pokazivač roditelja
+// dodavanje poddir unutar rod
+int dodajPoddir(DirPoz rod, DirPoz pod) {
+    pod->sljedeci = rod->poddir; //stavljamo novi poddir na pocetak 
+    rod->poddir = pod;   // ažuriramo pokaz rod.
     return 0;
 }
 
-// Ispisuje sadržaj direktorija rekurzivno
-int ispisiSadrzaj(DirPozicija dir, int dubina) {
-    DirPozicija trenutni = dir->poddirektorij;
+// pise sadr dir rekurz
+int ispisiSadr(DirPoz dir, int dubina) {
+    DirPoz trenutni = dir->poddir;
     while (trenutni) {
-        for (int i = 0; i < dubina; i++) printf("  "); // Ispisujemo razmake ovisno o dubini
+        for (int i = 0; i < dubina; i++) printf("  "); // pisemo razmake ovisno o dubini
         printf("%s\n", trenutni->ime);
-        ispisiSadrzaj(trenutni, dubina + 1); // Rekurzivno ispisivanje poddirektorija
+        ispisiSadr(trenutni, dubina + 1); // rekurzija
         trenutni = trenutni->sljedeci;
     }
     return 0;
 }
-// Funkcija dodaje novi element na stog (trenutni direktorij)
-// Parametri: 
-// - stog: pokazivač na glavu stoga
-// - dir: pokazivač na direktorij koji se dodaje na stog
-int push(StogPozicija stog, DirPozicija dir) {
-    StogPozicija novi = (StogPozicija)malloc(sizeof(Stog)); // Dinamička alokacija memorije za novi element stoga
-    if (!novi) return MALLOC_ERROR; // Provjera je li alokacija uspjela; ako nije, vraća grešku
+// daje novi elem na stog odn trenutni dir
+int push(StogPoz stog, DirPoz dir) {
+    StogPoz novi = (StogPoz)malloc(sizeof(Stog)); // alok za novi elem 
+    if (!novi) return MALLOC_ERROR; // provjera 
 
-    novi->dirPoz = dir;            // Postavlja pokazivač na direktorij koji dodajemo
-    novi->sljedeci = stog->sljedeci; // Novi element stoga pokazuje na trenutni vrh stoga
-    stog->sljedeci = novi;         // Glava stoga sada pokazuje na novi element kao vrh stoga
+    novi->dirPoz = dir;  // pokazivac na dir koji dodajemo
+    novi->sljedeci = stog->sljedeci; // novi elem stoga pokazuje vrh stoga
+    stog->sljedeci = novi; // Glava stoga sada pokazuje na novi element kao vrh stoga
 
-    return 0;                      // Vraća uspješan završetak funkcije
+    return 0;                   
 }
 // Funkcija uklanja vrh stoga (vraća se u roditeljski direktorij)
 // Parametri:
@@ -169,27 +164,11 @@ int promijeniDirektorij(StogPozicija stog, char* ime) {
 
     return 0; // Vraća uspješan završetak funkcije
 }
-// Funkcija ispisuje sadržaj trenutnog direktorija rekurzivno
-// Parametri:
-// - dir: pokazivač na trenutni direktorij
-// - dubina: trenutna dubina u hijerarhiji direktorija (koristi se za formatiranje)
-int ispisiSadrzaj(DirPozicija dir, int dubina) {
-    DirPozicija trenutni = dir->poddirektorij; // Početak poddirektorija aktivnog direktorija
 
-    while (trenutni) { // Prolazi kroz sve poddirektorije
-        for (int i = 0; i < dubina; i++) printf("  "); // Ispisuje razmake ovisno o dubini direktorija
-        printf("%s\n", trenutni->ime); // Ispisuje ime trenutnog direktorija
-        ispisiSadrzaj(trenutni, dubina + 1); // Rekurzivno poziva funkciju za poddirektorije
-        trenutni = trenutni->sljedeci; // Prelazi na sljedeći direktorij u istoj razini
-    }
 
-    return 0; // Vraća uspješan završetak funkcije
-}
-// Funkcija rekurzivno briše sve poddirektorije i oslobađa memoriju
-// Parametar:
-// - dir: pokazivač na trenutni direktorij
+
 void brisiDirektorije(DirPozicija dir) {
-    while (dir->poddirektorij) { // Dok postoje poddirektoriji
+    while (dir->poddirektorij) { // dok postoje poddirektoriji
         DirPozicija temp = dir->poddirektorij; // Privremeno sprema prvi poddirektorij
         dir->poddirektorij = temp->sljedeci;   // Ažurira pokazivač na sljedeći poddirektorij
         brisiDirektorije(temp); // Rekurzivno briše poddirektorije
