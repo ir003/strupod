@@ -9,12 +9,12 @@
 
 // def fu
 typedef struct node {
-    int data;   // vrijednost cvora
+    int data;   // vrijee cvora
     struct node* left;  // ljevi i
     struct node* right;  // desni podcvor
 } Node, *Pos;
 
-Pos insert(Pos root, int value); // fun za umetanje vrijednosti
+Pos insert(Pos root, int value); // fun za umetanje vrije
 int replace(Pos root);   // fun za zamjenu 
 int writeToFile(Pos root, FILE* fp);  // fun za pisanje 
 int deleteTree(Pos root);   // fun za oslobadanje memorije 
@@ -50,16 +50,16 @@ int main() {
     return 0; 
 }
 
-// fun za umetanje vrijednosti 
+// fun za umetanje vrije
 Pos insert(Pos root, int value) {
     if (!root) { // ako trenutni cvor NULL--> kreiraj novi cvor
         root = (Pos)malloc(sizeof(Node)); // aloc memorije za novi cvor
         if (!root) return NULL; // aloc nije uspjela
 
-        root->data = value; // prbac vrijednosti cvora
+        root->data = value; // prbac vrijei cvora
         root->left = root->right = NULL; // stavljanje pokza na NULL
     } 
-    else if (value < root->data) { // vrijednost manja--> idi lijevo
+    else if (value < root->data) { // vrije manja--> idi lijevo
         root->left = insert(root->left, value); // rekurz
     } 
     else { // idi desno
@@ -69,14 +69,14 @@ Pos insert(Pos root, int value) {
     return root; 
 }
 
-// fun za zamjenu vrijednosti cvorova bin st
+// fun za zamjenu vrije cvorova bin st
 int replace(Pos root) {
     if (!root) return 0; //  cvor NULL--> vrati 0
 
-    int originalValue = root->data; // sprema orig vrijednost cvora
+    int originalValue = root->data; // sprema orig vrije cvora
     root->data = replace(root->left) + replace(root->right); // zam--> zbr lijevog i desnog podstabla
 
-    return originalValue + root->data; // vracanje zbr orig  i nove vrijednosti cvora
+    return originalValue + root->data; // vracanje zbr orig  i nove vrije cvora
 }
 
 // fun za pisanje stabla u dat (Inorder
@@ -84,7 +84,7 @@ int writeToFile(Pos root, FILE* fp) {
     if (!root) return 0; // cvor NULL-->ne diraj
 
     writeToFile(root->left, fp); // rekur pisi lijevo podstablo
-    fprintf(fp, "%d\n", root->data); // pisanje vrijednost trenutnog cvora
+    fprintf(fp, "%d\n", root->data); // pisanje vrije trenutnog cvora
     writeToFile(root->right, fp); // rekur pisi desno podstablo
 
     return 0; 
