@@ -9,15 +9,15 @@
 
 // def fu
 typedef struct node {
-    int data;              // vrijednost cvora
-    struct node* left;     // ljevi i
-    struct node* right;    // desni podcvor
+    int data;   // vrijednost cvora
+    struct node* left;  // ljevi i
+    struct node* right;  // desni podcvor
 } Node, *Pos;
 
 Pos insert(Pos root, int value); // fun za umetanje vrijednosti
-int replace(Pos root);                // fun za zamjenu 
+int replace(Pos root);   // fun za zamjenu 
 int writeToFile(Pos root, FILE* fp);  // fun za pisanje 
-int deleteTree(Pos root);             // fun za oslobadanje memorije 
+int deleteTree(Pos root);   // fun za oslobadanje memorije 
 
 int main() {
     srand(time(NULL)); // gen slucajnih br
