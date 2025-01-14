@@ -90,7 +90,6 @@ int writeToFile(Pos root, FILE* fp) {
     return 0; 
 }
 
-// fun za oslobadanje memorije binarnog stabla
 int deleteTree(Pos root) {
     if (!root) return 0; //cvor NULL-->ne diraj
 
